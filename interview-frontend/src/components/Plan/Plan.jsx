@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   addProcedureToPlan,
+  addUserToProcedurePlan,
   getPlanProcedures,
   getProcedures,
   getUsers,
+  getUserPlanProcedures
 } from "../../api/api";
 import Layout from '../Layout/Layout';
 import ProcedureItem from "./ProcedureItem/ProcedureItem";
@@ -14,12 +16,16 @@ const Plan = () => {
   let { id } = useParams();
   const [procedures, setProcedures] = useState([]);
   const [planProcedures, setPlanProcedures] = useState([]);
+  //const [userPlanProcedures, setUserPlanProcedures] = useState([]);
+
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
     (async () => {
       var procedures = await getProcedures();
-      var planProcedures = await getPlanProcedures(id);
+      var planProcedures = await getUserPlanProcedures(id);
+     // var userPlanProcedures = await getUserPlanProcedures(id);
+
       var users = await getUsers();
 
       var userOptions = [];
@@ -28,6 +34,9 @@ const Plan = () => {
       setUsers(userOptions);
       setProcedures(procedures);
       setPlanProcedures(planProcedures);
+
+      //console.log(planProcedures);
+      //setUserPlanProcedures(planProcedures.userPlanProcedures);
     })();
   }, [id]);
 
@@ -49,6 +58,13 @@ const Plan = () => {
         },
       ];
     });
+  };
+
+  const handleAddUserToProcedurePlan = async (procedure, userId) => {
+    await addUserToProcedurePlan(userId, id, procedure.procedureId);
+    var planProcedures = await getUserPlanProcedures(id);
+    setPlanProcedures(planProcedures);
+
   };
 
   return (
@@ -83,7 +99,9 @@ const Plan = () => {
                         <PlanProcedureItem
                           key={p.procedure.procedureId}
                           procedure={p.procedure}
-                          users={users}
+                          users={users}                         
+                          handleAddUserToProcedurePlan={handleAddUserToProcedurePlan}
+                          planProcedures={planProcedures}
                         />
                       ))}
                     </div>

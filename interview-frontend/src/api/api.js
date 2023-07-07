@@ -33,6 +33,22 @@ export const addProcedureToPlan = async (planId, procedureId) => {
     return true;
 };
 
+export const addUserToProcedurePlan = async (userId, planId, procedureId) => {
+    const url = `${api_url}/Plan/AddUserToProcedurePlan`;
+    var command = { planId: planId, procedureId: procedureId ,userId: userId,};
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(command),
+    });
+
+    if (!response.ok) throw new Error("Failed to create plan");
+
+    return true;
+};
 export const getProcedures = async () => {
     const url = `${api_url}/Procedures`;
     const response = await fetch(url, {
@@ -46,6 +62,17 @@ export const getProcedures = async () => {
 
 export const getPlanProcedures = async (planId) => {
     const url = `${api_url}/PlanProcedure?$filter=planId eq ${planId}&$expand=procedure`;
+    const response = await fetch(url, {
+        method: "GET",
+    });
+
+    if (!response.ok) throw new Error("Failed to get plan procedures");
+
+    return await response.json();
+};
+
+export const getUserPlanProcedures = async (planId) => {
+    const url = `${api_url}/PlanProcedure?$filter=planId eq ${planId}&$expand=procedure,UserPlanProcedures,UserPlanProcedures($expand=User)`;
     const response = await fetch(url, {
         method: "GET",
     });

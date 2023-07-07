@@ -29,6 +29,7 @@ public class AddProcedureToPlanCommandHandler : IRequestHandler<AddProcedureToPl
             var plan = await _context.Plans
                 .Include(p => p.PlanProcedures)
                 .FirstOrDefaultAsync(p => p.PlanId == request.PlanId);
+
             var procedure = await _context.Procedures.FirstOrDefaultAsync(p => p.ProcedureId == request.ProcedureId);
 
             if (plan is null)
